@@ -94,7 +94,7 @@ function HeartRateZones({
   maxHR: number;
 }) {
   const zones = [
-    { name: 'Z1 Active Recovery', range: '50% - 60%', minPct: 0.5, maxPct: 0.6, color: '#3b82f6' },
+    { name: 'Z1 Endurance / Recovery', range: '< 60%', minPct: 0, maxPct: 0.6, color: '#3b82f6' },
     { name: 'Z2 Aerobic / Endurance', range: '60% - 70%', minPct: 0.6, maxPct: 0.7, color: '#10b981' },
     { name: 'Z3 Tempo / Rhythm', range: '70% - 80%', minPct: 0.7, maxPct: 0.8, color: '#f59e0b' },
     { name: 'Z4 Threshold / Hard', range: '80% - 90%', minPct: 0.8, maxPct: 0.9, color: '#f97316' },
@@ -113,14 +113,17 @@ function HeartRateZones({
       delta = timeData[i] - timeData[i - 1];
     }
 
-    if (pct >= 0.5) {
-      totalValidSeconds += delta;
-      if (pct >= 0.9) zoneSeconds[4] += delta;
-      else if (pct >= 0.8) zoneSeconds[3] += delta;
-      else if (pct >= 0.7) zoneSeconds[2] += delta;
-      else if (pct >= 0.6) zoneSeconds[1] += delta;
-      else zoneSeconds[0] += delta;
+    // Cap delta at 10 seconds to avoid attributing long pauses to a specific HR zone
+    if (delta > 10) {
+      delta = 1;
     }
+
+    totalValidSeconds += delta;
+    if (pct >= 0.9) zoneSeconds[4] += delta;
+    else if (pct >= 0.8) zoneSeconds[3] += delta;
+    else if (pct >= 0.7) zoneSeconds[2] += delta;
+    else if (pct >= 0.6) zoneSeconds[1] += delta;
+    else zoneSeconds[0] += delta;
   }
 
   const formatDurationHMS = (totalSecs: number) => {
@@ -251,7 +254,9 @@ export default function ActivityDetailPage() {
     activity.elapsed_time,
   );
 
-  const maxHR = activity.max_heartrate || (streams?.heartrate?.data ? Math.max(...streams.heartrate.data) : 190);
+  // Use a standard physiological max HR (e.g. 190) rather than the activity's max HR.
+  // activity.max_heartrate is the max achieved *during this specific activity*, not the user's overall max.
+  const maxHR = 190;
 
   return (
     <main className="flex-1 overflow-auto pb-20 lg:pb-6">
@@ -292,7 +297,7 @@ export default function ActivityDetailPage() {
               <p className="text-sm font-mono mt-1" style={{ color: sportMeta.hex, opacity: 0.9 }}>
                 {isIST ? `${localRange} IST` : <>{localRange} · {istLabel}</>}
               </p>
-            </div>
+a            </div>
             
             <div className="flex flex-col items-end gap-2">
               <Badge variant={getSportBadgeVariant(activity.type)}>{sportMeta.label}</Badge>
