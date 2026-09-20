@@ -738,46 +738,65 @@ function ComparePageInner() {
   const step = !selectedSport ? 1 : selectedActivities.filter(Boolean).length < 2 ? 2 : 3;
 
   return (
-    <main className="flex-1 overflow-auto pb-20 lg:pb-6">
+    <main className="flex-1 overflow-auto pb-24 lg:pb-8">
       <div className="px-4 md:px-8 lg:px-12 py-6 lg:py-8">
         {/* Top bar */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <Link href="/activities">
-            <button className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 transition-all duration-200 text-sm font-medium">
+            <button
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 hover:border-[#fc4c02]/40 transition-all duration-200 text-xs font-semibold uppercase tracking-wider min-h-[44px] cursor-pointer shadow-sm"
+              style={{ boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.12)' }}
+            >
               <ArrowLeft className="w-4 h-4" />
               Back
             </button>
           </Link>
 
           <div className="flex items-center gap-3">
-            <GitCompare className="w-5 h-5 text-text-secondary" />
-            <h1 className="text-xl font-bold tracking-tight">Compare Sessions</h1>
+            <div
+              className="p-2 rounded-xl bg-[#fc4c02]/15 text-[#fc4c02] border border-[#fc4c02]/30 shadow-[0_0_12px_rgba(252,76,2,0.15)]"
+              style={{ boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.2)' }}
+            >
+              <GitCompare className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#fc4c02]" />
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#fc4c02]">
+                  Performance Head-to-Head
+                </span>
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight">Compare Sessions</h1>
+            </div>
           </div>
 
-          {selectedSport && (
+          {selectedSport ? (
             <div className="flex items-center gap-2">
               <button
                 onClick={() => window.print()}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 transition-all duration-200 text-sm font-medium cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 transition-all duration-200 text-xs font-semibold uppercase tracking-wider min-h-[44px] cursor-pointer shadow-sm"
+                style={{ boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.12)' }}
                 title="Export comparison as PDF"
               >
-                <Printer className="w-3.5 h-3.5" />
+                <Printer className="w-4 h-4" />
                 Export PDF
               </button>
               <button
                 onClick={reset}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 transition-all duration-200 text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 transition-all duration-200 text-xs font-semibold uppercase tracking-wider min-h-[44px] cursor-pointer shadow-sm"
+                style={{ boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.12)' }}
               >
-                <RotateCcw className="w-3.5 h-3.5" />
+                <RotateCcw className="w-4 h-4" />
                 Reset
               </button>
             </div>
+          ) : (
+            <div className="w-20" />
           )}
-          {!selectedSport && <div className="w-20" />}
         </div>
 
         {/* Step pills */}
-        <div className="flex items-center gap-2 mb-8">
+        <div className="flex items-center gap-2 mb-8 flex-wrap">
           {['Sport', 'Sessions', 'Results'].map((label, i) => {
             const n = i + 1;
             const done = step > n;
@@ -785,28 +804,33 @@ function ComparePageInner() {
             return (
               <div key={label} className="flex items-center gap-2">
                 <div
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all min-h-[34px] ${
                     active
-                      ? 'bg-[#fc4c02]/15 text-[#fc4c02] border border-[#fc4c02]/30'
+                      ? 'bg-[#fc4c02] text-white shadow-[0_0_16px_rgba(252,76,2,0.35)]'
                       : done
-                        ? 'bg-white/8 text-text-primary border border-white/15'
-                        : 'bg-white/4 text-text-muted border border-transparent'
+                        ? 'bg-white/10 text-text-primary border border-border'
+                        : 'bg-white/5 text-text-muted border border-transparent'
                   }`}
+                  style={
+                    active
+                      ? { boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.4), 0 4px 12px rgba(252, 76, 2, 0.35)' }
+                      : undefined
+                  }
                 >
                   <span
                     className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
                       active
-                        ? 'bg-[#fc4c02] text-white'
+                        ? 'bg-white/20 text-white'
                         : done
-                          ? 'bg-text-secondary text-background'
+                          ? 'bg-text-secondary text-[var(--background)]'
                           : 'bg-white/10 text-text-muted'
                     }`}
                   >
                     {n}
                   </span>
-                  {label}
+                  <span>{label}</span>
                 </div>
-                {i < 2 && <ChevronRight className="w-3 h-3 text-text-muted flex-shrink-0" />}
+                {i < 2 && <ChevronRight className="w-3.5 h-3.5 text-text-muted flex-shrink-0" />}
               </div>
             );
           })}

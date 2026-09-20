@@ -86,10 +86,11 @@ export default function RootLayout({
     >
       <body className="bg-background text-text-primary overflow-hidden relative">
         <ThemeInitializer />
-        {/* Decorative background glow orbs */}
+        {/* Layer 1: Atmosphere (Ambient Base Gradients & Directional Soft Light) */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute top-[-20%] left-[-20%] w-[80vw] h-[80vw] sm:w-[60vw] sm:h-[60vw] md:w-[50vw] md:h-[50vw] rounded-full bg-accent-ride/10 blur-[80px] sm:blur-[100px] md:blur-[120px] animate-float-1" />
-          <div className="absolute bottom-[-20%] right-[-20%] w-[100vw] h-[100vw] sm:w-[70vw] sm:h-[70vw] md:w-[60vw] md:h-[60vw] rounded-full bg-accent-run/10 blur-[80px] sm:blur-[110px] md:blur-[130px] animate-float-2" />
+          <div className="absolute top-[-15%] left-[-15%] w-[85vw] h-[85vw] sm:w-[65vw] sm:h-[65vw] md:w-[50vw] md:h-[50vw] rounded-full bg-gradient-to-br from-[#fc4c02]/15 to-[#f59e0b]/10 blur-[100px] sm:blur-[120px] md:blur-[140px] animate-float-1" />
+          <div className="absolute bottom-[-20%] right-[-15%] w-[95vw] h-[95vw] sm:w-[70vw] sm:h-[70vw] md:w-[55vw] md:h-[55vw] rounded-full bg-gradient-to-tl from-[#f97316]/12 to-[#fb923c]/5 blur-[100px] sm:blur-[130px] md:blur-[150px] animate-float-2" />
+          <div className="absolute top-[40%] right-[25%] w-[40vw] h-[40vw] rounded-full bg-[#fc4c02]/5 blur-[120px] pointer-events-none" />
         </div>
 
         <div className="flex h-screen relative z-10">

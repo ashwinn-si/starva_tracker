@@ -2,24 +2,36 @@
 
 :root {
   color-scheme: light;
-  --background: #ffffff; /* White */
-  --surface: #f5f5f5; /* Light Gray */
-  --border: #e5e5e5; /* Light Border */
-  --muted: #f0f0f0; /* Light Muted */
-  --text-primary: #1f1f1f; /* Dark Text */
-  --text-secondary: #666666; /* Medium Gray */
-  --text-muted: #999999;
-  --tooltip-background: rgba(255, 255, 255, 0.96);
-  --tooltip-border: var(--border);
-  --tooltip-text: var(--text-primary);
-  --tooltip-label: var(--text-secondary);
-  --tooltip-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  --background: #f8f5f0; /* Warm champagne base */
+  --surface: #ffffff;
+  --surface-strong: rgba(255, 255, 255, 0.78);
+  --surface-mid: rgba(255, 255, 255, 0.52);
+  --surface-light: rgba(255, 255, 255, 0.35);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-focus: rgba(252, 76, 2, 0.45);
+  --muted: rgba(0, 0, 0, 0.04);
+  
+  --text-primary: #181512; /* Warm near-black */
+  --text-secondary: #544f48; /* Warm neutral charcoal */
+  --text-muted: #878177; /* Soft muted */
+  
+  --specular-rim: inset 0 1px 0 0 rgba(255, 255, 255, 0.85);
+  --specular-rim-strong: inset 0 1.5px 0 0 rgba(255, 255, 255, 0.95);
+  
+  --tooltip-background: rgba(255, 255, 255, 0.94);
+  --tooltip-border: rgba(0, 0, 0, 0.08);
+  --tooltip-text: #181512;
+  --tooltip-label: #544f48;
+  --tooltip-shadow: 0 12px 32px -4px rgba(24, 21, 18, 0.12);
 
-  /* Accent colors matching Strava-orange theme */
-  --accent-ride: #f97316; /* Orange 500 */
-  --accent-run: #fc4c02; /* Strava Orange */
-  --accent-walk: #f59e0b; /* Amber 500 */
-  --accent-pr: #fb923c; /* Orange 400 */
+  /* Orange Brand Tokens */
+  --accent-orange: #fc4c02; /* Strava Orange */
+  --accent-orange-bright: #f97316;
+  --accent-orange-glow: rgba(252, 76, 2, 0.18);
+  --accent-ride: #f97316;
+  --accent-run: #fc4c02;
+  --accent-walk: #f59e0b;
+  --accent-pr: #fb923c;
   --strava: #fc4c02;
 
   --color-primary: #fc4c02;
@@ -28,18 +40,37 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --background: #09090b; /* Zinc 950 */
-  --surface: #18181b; /* Zinc 900 */
-  --border: #27272a; /* Zinc 800 */
-  --muted: #3f3f46; /* Zinc 700 for inputs */
-  --text-primary: #fafafa; /* Zinc 50 */
-  --text-secondary: #a1a1aa; /* Zinc 400 */
-  --text-muted: #71717a; /* Zinc 500 */
-  --tooltip-background: rgba(24, 24, 27, 0.96);
-  --tooltip-border: rgba(255, 255, 255, 0.08);
-  --tooltip-text: var(--text-primary);
-  --tooltip-label: var(--text-secondary);
-  --tooltip-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  --background: #090a0f; /* Deep carbon canvas */
+  --surface: #12151c;
+  --surface-strong: rgba(18, 21, 28, 0.74);
+  --surface-mid: rgba(18, 21, 28, 0.52);
+  --surface-light: rgba(255, 255, 255, 0.04);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(252, 76, 2, 0.55);
+  --muted: rgba(255, 255, 255, 0.05);
+
+  --text-primary: #fdfefe; /* Crisp luminous off-white */
+  --text-secondary: #a6a9b6; /* Neutral cool slate */
+  --text-muted: #6c7182; /* Deep muted */
+
+  --specular-rim: inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+  --specular-rim-strong: inset 0 1.5px 0 0 rgba(255, 255, 255, 0.18);
+
+  --tooltip-background: rgba(18, 21, 28, 0.94);
+  --tooltip-border: rgba(255, 255, 255, 0.1);
+  --tooltip-text: #fdfefe;
+  --tooltip-label: #a6a9b6;
+  --tooltip-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.5);
+
+  /* Luminous Orange Accents in Dark Mode */
+  --accent-orange: #fc4c02;
+  --accent-orange-bright: #ff6b2c;
+  --accent-orange-glow: rgba(252, 76, 2, 0.24);
+  --accent-ride: #f97316;
+  --accent-run: #fc4c02;
+  --accent-walk: #f59e0b;
+  --accent-pr: #fb923c;
+  --strava: #fc4c02;
 }
 
 @theme inline {
@@ -51,6 +82,7 @@
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
 
+  --color-accent-orange: var(--accent-orange);
   --color-accent-ride: var(--accent-ride);
   --color-accent-run: var(--accent-run);
   --color-accent-walk: var(--accent-walk);
@@ -64,104 +96,123 @@ body {
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
-/* Premium Scrollbar Customization */
+/* Tabular figures for financial and sports analytics metrics */
+.tabular-nums, [data-tabular="true"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Premium Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
+  background: var(--text-muted);
 }
 
-/* Custom Text Highlight */
+/* Custom Text Selection with Orange Tint */
 ::selection {
-  background: rgba(252, 76, 2, 0.25);
-  color: #fafafa;
+  background: rgba(252, 76, 2, 0.3);
+  color: #ffffff;
 }
 
-/* Light mode glassmorphism */
-:root .glass-panel {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+/* ────────────────────────────────────────────────────────
+   3-Layer Glassmorphic Depth System
+   Layer 1: Atmosphere (handled via background radial blobs)
+   Layer 2: Diffusion (backdrop-filter: blur)
+   Layer 3: Surface (box-shadow specular 1px top highlight)
+   ──────────────────────────────────────────────────────── */
+
+.glass-strong {
+  background: var(--surface-strong);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  box-shadow: var(--specular-rim-strong), 0 16px 36px -6px rgba(0, 0, 0, 0.2);
 }
 
-:root .glass-panel-hover:hover {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(0, 0, 0, 0.15);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
-}
-
-:root .glass-nav {
-  background: rgba(255, 255, 255, 0.8);
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-:root .glass-bottom-nav {
-  background: rgba(255, 255, 255, 0.8);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-/* Dark mode glassmorphism */
-:root[data-theme='dark'] .glass-panel {
-  background: rgba(24, 24, 27, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-}
-
-:root[data-theme='dark'] .glass-panel-hover:hover {
-  background: rgba(24, 24, 27, 0.6);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
-}
-
-:root[data-theme='dark'] .glass-nav {
-  background: rgba(9, 9, 11, 0.6);
-  border-right: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-:root[data-theme='dark'] .glass-bottom-nav {
-  background: rgba(9, 9, 11, 0.6);
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-/* Shared glass styles */
-.glass-panel,
-.glass-nav,
-.glass-bottom-nav {
+.glass-mid, .glass-panel {
+  background: var(--surface-mid);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  box-shadow: var(--specular-rim), 0 8px 24px -4px rgba(0, 0, 0, 0.12);
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-light {
+  background: var(--surface-light);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  box-shadow: var(--specular-rim);
+}
+
+.glass-panel-hover:hover {
+  background: var(--surface-strong);
+  border-color: rgba(252, 76, 2, 0.35);
+  box-shadow: var(--specular-rim), 0 12px 32px -4px var(--accent-orange-glow);
+}
+
+.glass-nav {
+  background: var(--surface-strong);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid var(--border);
+  box-shadow: var(--specular-rim);
+}
+
+.glass-bottom-nav {
+  background: var(--surface-strong);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  box-shadow: var(--specular-rim);
+}
+
+/* Reusable Glass Buttons */
+.glass-btn-primary {
+  background: linear-gradient(135deg, #fc4c02 0%, #f97316 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.45), 0 4px 16px -2px rgba(252, 76, 2, 0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-btn-primary:hover {
+  background: linear-gradient(135deg, #ff5913 0%, #fa822d 100%);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.6), 0 6px 20px 0 rgba(252, 76, 2, 0.55);
+}
+
+.glass-btn-accent-ghost {
+  background: rgba(252, 76, 2, 0.12);
+  color: var(--accent-orange);
+  border: 1px solid rgba(252, 76, 2, 0.28);
+  box-shadow: var(--specular-rim);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-btn-accent-ghost:hover {
+  background: rgba(252, 76, 2, 0.2);
+  border-color: rgba(252, 76, 2, 0.45);
+  box-shadow: var(--specular-rim), 0 4px 16px -2px var(--accent-orange-glow);
 }
 
 /* Float Glow Orbs Animations */
 @keyframes float-slow-1 {
-  0%,
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(40px, -60px) scale(1.15);
-  }
-  66% {
-    transform: translate(-30px, 30px) scale(0.9);
-  }
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(35px, -50px) scale(1.1); }
+  66% { transform: translate(-25px, 25px) scale(0.92); }
 }
 
 @keyframes float-slow-2 {
-  0%,
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  50% {
-    transform: translate(-50px, 50px) scale(1.2);
-  }
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(-45px, 45px) scale(1.15); }
 }
 
 .animate-float-1 {
@@ -176,13 +227,16 @@ body {
 .recharts-default-tooltip {
   background-color: var(--tooltip-background) !important;
   border: 1px solid var(--tooltip-border) !important;
-  border-radius: 12px !important;
+  border-radius: 14px !important;
   box-shadow: var(--tooltip-shadow) !important;
   color: var(--tooltip-text) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
 }
 
 .recharts-default-tooltip .recharts-tooltip-label {
   color: var(--tooltip-label) !important;
+  font-weight: 600 !important;
 }
 
 .recharts-default-tooltip .recharts-tooltip-item,
@@ -190,4 +244,5 @@ body {
 .recharts-default-tooltip .recharts-tooltip-item-separator,
 .recharts-default-tooltip .recharts-tooltip-item-value {
   color: var(--tooltip-text) !important;
+  font-variant-numeric: tabular-nums !important;
 }

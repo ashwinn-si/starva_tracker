@@ -6,8 +6,10 @@ import useStravaStore from '@/store/useStravaStore';
 import { ActivityCard } from '@/components/cards/ActivityCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { Filter, RotateCw } from 'lucide-react';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { Filter, RotateCw, ArrowUpDown } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
+import { getSportMeta } from '@/utils/sportConfig';
 
 const container = {
   animate: {
@@ -58,9 +60,9 @@ export default function ActivitiesPage() {
     return filtered.sort((a, b) => {
       switch (sortBy) {
         case 'distance':
-          return b.distance - a.distance;
+          return (b.distance || 0) - (a.distance || 0);
         case 'elevation':
-          return b.elevation_gain - a.elevation_gain;
+          return (b.elevation_gain || 0) - (a.elevation_gain || 0);
         case 'date':
         default:
           return new Date(b.start_date).getTime() - new Date(a.start_date).getTime();
@@ -69,20 +71,15 @@ export default function ActivitiesPage() {
   }, [activities, sportFilter, sortBy]);
 
   const totalPages = Math.ceil(filteredActivities.length / ITEMS_PER_PAGE);
-  const paginatedActivities = filteredActivities.slice(
-    0,
-    currentPage * ITEMS_PER_PAGE
-  );
+  const paginatedActivities = filteredActivities.slice(0, currentPage * ITEMS_PER_PAGE);
 
-  const sportTypes = [...new Set(activities.map((a) => a.type))];
+  const sportTypes = useMemo(() => [...new Set(activities.map((a) => a.type))], [activities]);
 
-  // Helper function to update sport filter and reset page index to 1
   const handleSportFilterChange = (sport: string | null) => {
     setSportFilter(sport);
     setCurrentPage(1);
   };
 
-  // Helper function to update sort and reset page index to 1
   const handleSortChange = (newSortBy: 'date' | 'distance' | 'elevation') => {
     setSortBy(newSortBy);
     setCurrentPage(1);
@@ -90,98 +87,121 @@ export default function ActivitiesPage() {
 
   if (error) {
     return (
-      <div className="p-6">
+      <main className="flex-1 overflow-auto p-6">
         <EmptyState title="Error loading activities" description={error} />
-      </div>
+      </main>
     );
   }
 
   return (
-    <main className="flex-1 overflow-auto pb-20 lg:pb-6">
+    <main className="flex-1 overflow-auto pb-24 lg:pb-8">
       <div className="px-4 md:px-8 lg:px-12 py-6 lg:py-8">
-        <div className="flex items-center justify-between mb-6 gap-4">
-          <h1 className="text-3xl font-bold tracking-tight">Activities</h1>
+        {/* Header with Title & Refresh */}
+        <div className="flex items-center justify-between mb-8 gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-2 h-2 rounded-full bg-[#fc4c02] shadow-[0_0_8px_#fc4c02]" />
+              <span className="text-xs uppercase font-bold tracking-wider text-[#fc4c02]">
+                Chronological Feed
+              </span>
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight">Activities</h1>
+          </div>
+
           <button
-            onClick={() => fetchAll()}
+            onClick={() => fetchAll(true)}
             disabled={loading}
-            className="p-2.5 rounded-xl border border-white/5 bg-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 hover:border-accent-ride/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            className="min-h-[44px] min-w-[44px] p-2.5 rounded-xl border border-border bg-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 hover:border-[#fc4c02]/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer flex items-center justify-center shadow-sm"
+            style={{ boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.12)' }}
             title="Refresh activities from Strava"
+            aria-label="Refresh activities from Strava"
           >
-            <RotateCw
-              className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`}
-            />
+            <RotateCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#fc4c02]' : ''}`} />
           </button>
         </div>
 
-        {/* Filter Bar */}
+        {/* Filter & Sort Toolbar */}
         {!loading && activities.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 glass-panel rounded-2xl p-4"
-          >
-            <div className="flex items-center gap-4 flex-wrap">
-              <div className="flex items-center gap-2 mr-1">
-                <Filter className="w-4 h-4 text-accent-ride/80" />
-                <span className="text-sm font-medium text-text-secondary">Sport:</span>
-              </div>
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+            <GlassCard variant="strong" className="p-3 sm:p-4">
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <div className="flex items-center gap-2 px-1 text-text-secondary">
+                  <Filter className="w-4 h-4 text-[#fc4c02]" />
+                  <span className="text-xs font-bold uppercase tracking-wider">Sport:</span>
+                </div>
 
-              <button
-                onClick={() => handleSportFilterChange(null)}
-                className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-all duration-300 ${
-                  sportFilter === null
-                    ? 'bg-accent-ride/25 text-text-primary border border-accent-ride/40 shadow-sm'
-                    : 'bg-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 border border-transparent'
-                }`}
-              >
-                All
-              </button>
-
-              {sportTypes.map((sport) => (
                 <button
-                  key={sport}
-                  onClick={() => handleSportFilterChange(sport)}
-                  className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-all duration-300 ${
-                    sportFilter === sport
-                      ? 'bg-accent-ride/25 text-text-primary border border-accent-ride/40 shadow-sm'
+                  onClick={() => handleSportFilterChange(null)}
+                  className={`min-h-[38px] px-3.5 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                    sportFilter === null
+                      ? 'bg-[#fc4c02] text-white shadow-[0_0_14px_rgba(252,76,2,0.35)]'
                       : 'bg-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 border border-transparent'
                   }`}
+                  style={
+                    sportFilter === null
+                      ? { boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.4)' }
+                      : undefined
+                  }
                 >
-                  {sport}
+                  All ({activities.length})
                 </button>
-              ))}
 
-              <div className="ml-auto flex items-center gap-2">
-                <span className="text-sm font-medium text-text-secondary">Sort:</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => handleSortChange(e.target.value as 'date' | 'distance' | 'elevation')}
-                  className="bg-white/5 text-text-primary rounded-xl px-3 py-1.5 text-sm border border-white/5 focus:outline-none focus:border-accent-ride/40 transition-colors"
-                >
-                  <option value="date" className="bg-[#0B0F19]">Latest</option>
-                  <option value="distance" className="bg-[#0B0F19]">Distance</option>
-                  <option value="elevation" className="bg-[#0B0F19]">Elevation</option>
-                </select>
+                {sportTypes.map((sport) => {
+                  const meta = getSportMeta(sport);
+                  const count = activities.filter((a) => a.type === sport).length;
+                  const isSelected = sportFilter === sport;
+                  return (
+                    <button
+                      key={sport}
+                      onClick={() => handleSportFilterChange(sport)}
+                      className={`min-h-[38px] px-3.5 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                        isSelected
+                          ? 'bg-[#fc4c02] text-white shadow-[0_0_14px_rgba(252,76,2,0.35)]'
+                          : 'bg-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 border border-transparent'
+                      }`}
+                      style={
+                        isSelected
+                          ? { boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.4)' }
+                          : undefined
+                      }
+                    >
+                      <span>{meta.label}</span>
+                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-white/20 text-white' : 'bg-white/10 text-text-muted'}`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+
+                {/* Sort selector in glass styling */}
+                <div className="ml-auto flex items-center gap-2 pl-2 border-l border-border/60">
+                  <ArrowUpDown className="w-3.5 h-3.5 text-text-muted" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">Sort:</span>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => handleSortChange(e.target.value as 'date' | 'distance' | 'elevation')}
+                    className="bg-white/5 text-text-primary rounded-xl px-3 py-1.5 text-xs font-medium border border-border focus:outline-none focus:border-[#fc4c02] transition-colors cursor-pointer min-h-[38px]"
+                  >
+                    <option value="date" className="bg-[#12151c] text-white">Latest First</option>
+                    <option value="distance" className="bg-[#12151c] text-white">Longest Distance</option>
+                    <option value="elevation" className="bg-[#12151c] text-white">Most Elevation</option>
+                  </select>
+                </div>
               </div>
-            </div>
+            </GlassCard>
           </motion.div>
         )}
 
-        {/* Activities Grid */}
+        {/* Activities List */}
         {loading ? (
           <div className="grid gap-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Skeleton key={i} className="h-32" />
+              <Skeleton key={i} className="h-36 rounded-2xl" />
             ))}
           </div>
         ) : paginatedActivities.length > 0 ? (
           <>
-            <motion.div
-              className="grid gap-4 mb-6"
-              variants={container}
-              initial="initial"
-              animate="animate"
-            >
+            <motion.div className="grid gap-4 mb-6" variants={container} initial="initial" animate="animate">
               {paginatedActivities.map((activity) => (
                 <motion.div key={activity.id} variants={item}>
                   <ActivityCard activity={activity} />
@@ -191,15 +211,16 @@ export default function ActivitiesPage() {
 
             {/* Infinite Scroll Trigger */}
             {currentPage < totalPages && (
-              <div ref={ref} className="py-8 flex justify-center">
-                <div className="w-8 h-8 rounded-full border-2 border-accent-ride/20 border-t-accent-ride animate-spin" />
+              <div ref={ref} className="py-8 flex justify-center items-center gap-2 text-xs text-text-muted">
+                <div className="w-5 h-5 rounded-full border-2 border-[#fc4c02]/20 border-t-[#fc4c02] animate-spin" />
+                <span>Loading more sessions...</span>
               </div>
             )}
           </>
         ) : (
           <EmptyState
-            title={sportFilter ? 'No activities found' : 'No activities yet'}
-            description={sportFilter ? `Try adjusting your filters` : 'Your activities will appear here'}
+            title={sportFilter ? 'No activities matching filter' : 'No activities found'}
+            description={sportFilter ? 'Try clearing or changing your sport filter' : 'Your activities will appear once synced'}
           />
         )}
       </div>

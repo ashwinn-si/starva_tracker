@@ -11,6 +11,8 @@ import { ProgressChart } from '@/components/charts/ProgressChart';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Badge } from '@/components/ui/Badge';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { Button } from '@/components/ui/Button';
 import { KmSplitTable } from '@/components/KmSplitTable';
 import { BestEffortsTable } from '@/components/BestEffortsTable';
 import { ArrowLeft, GitCompare, X, Trophy, Star } from 'lucide-react';
@@ -140,9 +142,12 @@ function HeartRateZones({
   };
 
   return (
-    <div className="glass-panel rounded-2xl p-6">
-      <h3 className="text-base font-semibold text-text-primary mb-1">Heart Rate Zones</h3>
-      <p className="text-sm text-text-secondary mb-5">
+    <GlassCard variant="strong" className="p-6">
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-2 h-2 rounded-full bg-[#fc4c02] shadow-[0_0_8px_#fc4c02]" />
+        <h3 className="text-base font-bold text-text-primary">Heart Rate Zones</h3>
+      </div>
+      <p className="text-xs text-text-secondary mb-5">
         Time spent in training intensity zones based on max heart rate ({maxHR} bpm).
       </p>
 
@@ -154,17 +159,17 @@ function HeartRateZones({
             <div key={idx} className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-xs font-semibold">
                 <span style={{ color: zone.color }}>{zone.name}</span>
-                <span className="text-text-secondary font-mono">
+                <span className="text-text-secondary font-mono tabular-nums">
                   {pct.toFixed(1)}% · {formatDurationHMS(seconds)}
                 </span>
               </div>
-              <div className="h-3 w-full rounded-full bg-white/5 overflow-hidden">
+              <div className="h-3 w-full rounded-full bg-white/5 overflow-hidden border border-border/40">
                 <div
                   className="h-full rounded-full transition-all duration-500"
                   style={{
                     width: `${pct}%`,
                     backgroundColor: zone.color,
-                    boxShadow: `0 0 8px ${zone.color}40`,
+                    boxShadow: `0 0 10px ${zone.color}60`,
                   }}
                 />
               </div>
@@ -172,7 +177,7 @@ function HeartRateZones({
           );
         }).reverse()}
       </div>
-    </div>
+    </GlassCard>
   );
 }
 
@@ -259,101 +264,126 @@ export default function ActivityDetailPage() {
   const maxHR = 190;
 
   return (
-    <main className="flex-1 overflow-auto pb-20 lg:pb-6">
+    <main className="flex-1 overflow-auto pb-24 lg:pb-8">
       <div className="px-4 md:px-8 lg:px-12 py-6 lg:py-8">
-        {/* Back Button + Compare */}
-        <div className="flex items-center justify-between mb-6">
+        {/* Back Button + Compare with Ergonomic 44px Touch Targets */}
+        <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <Link href="/activities">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-muted transition-all duration-300 text-sm font-medium">
+            <button
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-white/5 text-text-secondary hover:text-text-primary hover:bg-white/10 hover:border-[#fc4c02]/40 transition-all duration-200 text-xs font-semibold uppercase tracking-wider min-h-[44px] cursor-pointer shadow-sm"
+              style={{ boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.12)' }}
+            >
               <ArrowLeft className="w-4 h-4" />
               Back to Activities
             </button>
           </Link>
           <Link href={`/compare?a=${id}`}>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-ride/10 border border-accent-ride/25 text-accent-ride hover:bg-accent-ride/20 transition-all duration-300 text-sm font-medium">
+            <button
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#fc4c02]/30 bg-[#fc4c02]/15 text-[#fc4c02] hover:bg-[#fc4c02]/25 transition-all duration-200 text-xs font-semibold uppercase tracking-wider min-h-[44px] cursor-pointer shadow-[0_0_14px_rgba(252,76,2,0.15)]"
+              style={{ boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.2)' }}
+            >
               <GitCompare className="w-4 h-4" />
-              Compare
+              Compare Session
             </button>
           </Link>
         </div>
 
-        {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight mb-2">
-                {activity.name}
-              </h1>
-              <p className="text-text-secondary">
-                {new Date(activity.start_date).toLocaleDateString('en-IN', {
-                  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-                  timeZone: 'Asia/Kolkata',
-                })}
-              </p>
-              <p className="text-sm font-mono mt-1" style={{ color: sportMeta.hex, opacity: 0.9 }}>
-                {isIST ? `${localRange} IST` : <>{localRange} · {istLabel}</>}
-              </p>
-a            </div>
-            
-            <div className="flex flex-col items-end gap-2">
-              <Badge variant={getSportBadgeVariant(activity.type)}>{sportMeta.label}</Badge>
-              
-              {activity.pr_count ? (
-                (() => {
-                  const prEfforts = (activity.best_efforts || [])
-                    .filter(e => e.pr_rank === 1)
-                    .sort((a, b) => b.distance - a.distance);
-                  
-                  let prText = `${activity.pr_count} ${activity.pr_count === 1 ? 'PR' : 'PRs'}`;
-                  if (prEfforts.length > 0) {
-                    prText = prEfforts.length === 1 
-                      ? `PR: ${prEfforts[0].name}` 
-                      : `PR: ${prEfforts[0].name} +${prEfforts.length - 1}`;
-                  }
+        {/* Hero Section with Quiet Luxury Glass Styling */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+          <GlassCard variant="strong" className="p-6 sm:p-8 relative overflow-hidden">
+            {/* Ambient backlight */}
+            <div
+              className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl opacity-20 pointer-events-none"
+              style={{ background: sportMeta.hex }}
+            />
 
-                  return (
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-orange-500/30 text-orange-500 font-medium text-xs shadow-sm">
-                      <Trophy className="w-3.5 h-3.5" />
-                      {prText}
-                    </div>
-                  );
-                })()
-              ) : activity.achievement_count ? (
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-amber-500/30 text-amber-500 font-medium text-xs shadow-sm">
-                  <Star className="w-3.5 h-3.5" />
-                  {activity.achievement_count} {activity.achievement_count === 1 ? 'Achievement' : 'Achievements'}
+            <div className="flex items-start justify-between mb-4 flex-wrap gap-4 relative z-10">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className="w-2 h-2 rounded-full" style={{ background: sportMeta.hex }} />
+                  <span className="text-xs uppercase font-bold tracking-wider" style={{ color: sportMeta.hex }}>
+                    Session Analysis
+                  </span>
                 </div>
-              ) : null}
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2 text-text-primary">
+                  {activity.name}
+                </h1>
+                <p className="text-sm text-text-secondary">
+                  {new Date(activity.start_date).toLocaleDateString('en-IN', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    timeZone: 'Asia/Kolkata',
+                  })}
+                </p>
+                <p className="text-xs font-mono mt-1 tabular-nums" style={{ color: sportMeta.hex, opacity: 0.9 }}>
+                  {isIST ? `${localRange} IST` : <>{localRange} · {istLabel}</>}
+                </p>
+              </div>
+
+              <div className="flex flex-col items-end gap-2.5">
+                <Badge variant={getSportBadgeVariant(activity.type)}>{sportMeta.label}</Badge>
+
+                {activity.pr_count ? (
+                  (() => {
+                    const prEfforts = (activity.best_efforts || [])
+                      .filter((e) => e.pr_rank === 1)
+                      .sort((a, b) => b.distance - a.distance);
+
+                    let prText = `${activity.pr_count} ${activity.pr_count === 1 ? 'PR' : 'PRs'}`;
+                    if (prEfforts.length > 0) {
+                      prText =
+                        prEfforts.length === 1
+                          ? `PR: ${prEfforts[0].name}`
+                          : `PR: ${prEfforts[0].name} +${prEfforts.length - 1}`;
+                    }
+
+                    return (
+                      <div
+                        className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#fc4c02]/20 to-[#f97316]/20 border border-[#fc4c02]/35 text-[#fc4c02] font-semibold text-xs shadow-[0_0_14px_rgba(252,76,2,0.2)]"
+                        style={{ boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.2)' }}
+                      >
+                        <Trophy className="w-3.5 h-3.5" />
+                        <span>{prText}</span>
+                      </div>
+                    );
+                  })()
+                ) : activity.achievement_count ? (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold text-xs shadow-sm">
+                    <Star className="w-3.5 h-3.5" />
+                    <span>
+                      {activity.achievement_count}{' '}
+                      {activity.achievement_count === 1 ? 'Achievement' : 'Achievements'}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
             </div>
-            
-          </div>
+          </GlassCard>
         </motion.div>
-
-
 
         {/* Personal Records Details */}
         {activity.pr_count ? (
           (() => {
-            const prs = (activity.best_efforts || []).filter(e => e.pr_rank === 1);
+            const prs = (activity.best_efforts || []).filter((e) => e.pr_rank === 1);
             if (prs.length === 0) return null;
 
             return (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
                 className="mb-8"
               >
-                <h3 className="text-base font-semibold text-text-primary mb-3 flex items-center gap-2">
-                  <Trophy className="w-4 h-4 text-orange-500" />
-                  Official Personal Records
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {prs.map(pr => {
+                <div className="flex items-center gap-2 mb-3">
+                  <Trophy className="w-4 h-4 text-[#fc4c02]" />
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary">
+                    Official Personal Records
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {prs.map((pr) => {
                     const formatPRTime = (s: number) => {
                       const h = Math.floor(s / 3600);
                       const m = Math.floor((s % 3600) / 60);
@@ -365,23 +395,34 @@ a            </div>
                     const speed = pr.distance / pr.elapsed_time;
 
                     return (
-                      <div key={pr.name} className="glass-panel rounded-2xl p-4 border border-orange-500/20 bg-orange-500/5 relative overflow-hidden">
-                        <div className="absolute -right-4 -top-4 opacity-[0.03] pointer-events-none">
-                          <Trophy className="w-24 h-24 text-orange-900" />
+                      <GlassCard
+                        key={pr.name}
+                        variant="mid"
+                        className="p-5 border-t-2 border-t-[#fc4c02] relative overflow-hidden"
+                      >
+                        <div className="flex justify-between items-start mb-3">
+                          <span className="font-bold text-base text-text-primary">{pr.name}</span>
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-[#fc4c02] bg-[#fc4c02]/15 px-2 py-0.5 rounded-full border border-[#fc4c02]/30">
+                            PR
+                          </span>
                         </div>
-                        <div className="flex justify-between items-start mb-4">
-                          <span className="font-bold text-lg text-text-primary">{pr.name}</span>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-orange-600 bg-orange-500/20 px-2 py-0.5 rounded-full">PR</span>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[10px] text-text-secondary uppercase font-bold tracking-wider">
+                            Time
+                          </span>
+                          <span className="font-mono text-2xl font-bold text-text-primary tabular-nums">
+                            {formatPRTime(pr.elapsed_time)}
+                          </span>
                         </div>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-xs text-text-secondary uppercase tracking-wider">Time</span>
-                          <span className="font-mono text-xl font-semibold text-text-primary">{formatPRTime(pr.elapsed_time)}</span>
+                        <div className="flex flex-col gap-0.5 mt-3 pt-2.5 border-t border-border/60">
+                          <span className="text-[10px] text-text-secondary uppercase font-bold tracking-wider">
+                            Split Pace
+                          </span>
+                          <span className="font-mono text-xs font-semibold text-[#fc4c02] tabular-nums">
+                            {formatPacePerKm(speed)}
+                          </span>
                         </div>
-                        <div className="flex flex-col gap-1 mt-3">
-                          <span className="text-xs text-text-secondary uppercase tracking-wider">Pace</span>
-                          <span className="font-mono text-sm font-medium text-text-secondary">{formatPacePerKm(speed)}</span>
-                        </div>
-                      </div>
+                      </GlassCard>
                     );
                   })}
                 </div>
@@ -427,17 +468,15 @@ a            </div>
           ]
             .filter((s): s is { label: string; value: string } => !!s)
             .map((stat, idx) => (
-              <motion.div
-                key={idx}
-                variants={item}
-                className="glass-panel rounded-2xl p-4"
-              >
-                <p className="text-xs uppercase tracking-wider text-text-secondary mb-2">
-                  {stat.label}
-                </p>
-                <p className="text-2xl font-mono font-semibold">
-                  {stat.value}
-                </p>
+              <motion.div key={idx} variants={item}>
+                <GlassCard variant="mid" interactive className="p-4 flex flex-col justify-between h-28">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                    {stat.label}
+                  </p>
+                  <p className="text-2xl font-mono font-bold text-text-primary tracking-tight tabular-nums">
+                    {stat.value}
+                  </p>
+                </GlassCard>
               </motion.div>
             ))}
         </motion.div>

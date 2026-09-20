@@ -1,160 +1,115 @@
-# Design System
+# Strava Hub — Design System, UI & UX Flow Specification (`STYLE.md`)
 
-## Color Palette
+This document outlines the complete visual design system, glassmorphism UI architecture, interactive patterns, and user experience flows implemented in Strava Hub.
 
-### Base Colors
-| Name | Value | Usage |
-|------|-------|-------|
-| Background | `#0f0f0f` | Page background |
-| Surface | `#1a1a1a` | Cards, panels |
-| Border | `#262626` | Dividers, borders |
-| Muted | `#3a3a3a` | Disabled, secondary |
+---
 
-### Text Colors
-| Name | Value | Usage |
-|------|-------|-------|
-| Primary | `#f5f5f5` | Main text |
-| Secondary | `#9ca3af` | Labels, hints |
-| Muted | `#6b7280` | Disabled text |
+## 1. Visual Philosophy & Glassmorphic Depth System
 
-### Accent Colors
-| Name | Value | Activity |
-|------|-------|----------|
-| Ride | `#f97316` | Cycling |
-| Run | `#3b82f6` | Running |
-| Walk | `#22c55e` | Walking |
-| PR | `#a855f7` | Personal Records |
+Strava Hub is designed around **quiet luxury** and **physical believability**. Rather than decorative transparency, surfaces simulate frosted glass as a structural physical material that captures and diffuses ambient light.
 
-### Brand
-| Name | Value | Usage |
-|------|-------|-------|
-| Strava | `#fc4c02` | Official Strava orange |
+### 1.1 The Three-Layer Depth Model
 
-## Typography
-
-### Font Families
-- **Sans**: Inter (body text, UI)
-- **Mono**: JetBrains Mono (numbers, code)
-
-### Font Sizes
-| Class | Size | Usage |
-|-------|------|-------|
-| `text-xs` | 0.75rem (12px) | Labels, captions |
-| `text-sm` | 0.875rem (14px) | Body text |
-| `text-base` | 1rem (16px) | Paragraph |
-| `text-lg` | 1.125rem (18px) | Subheadings |
-| `text-2xl` | 1.5rem (24px) | Section title |
-| `text-3xl` | 1.875rem (30px) | Page title |
-
-### Font Weights
-| Weight | Value | Usage |
-|--------|-------|-------|
-| Regular | 400 | Body text |
-| Medium | 500 | Buttons, labels |
-| Semibold | 600 | Headings, emphasis |
-| Bold | 700 | Strong emphasis |
-
-## Spacing
-
-### Scale (in rem)
 ```
-0.25rem (4px)    - xs
-0.5rem  (8px)    - sm
-1rem    (16px)   - base
-1.5rem  (24px)   - lg
-2rem    (32px)   - xl
-2.5rem  (40px)   - 2xl
+┌────────────────────────────────────────────────────────┐
+│ Layer 3: Surface (Frosted Glass Panels, GlassCard)     │  ← Inset 1px light-catch top specular rim
+├────────────────────────────────────────────────────────┤
+│ Layer 2: Diffusion (Reflected Back-Gradients & Blurs)  │  ← Tuned backdrop blur (10px–20px)
+├────────────────────────────────────────────────────────┤
+│ Layer 1: Atmosphere (Ambient Base Gradients & Light)   │  ← Directional soft radial fields
+└────────────────────────────────────────────────────────┘
 ```
 
-### Usage
-- **Page padding**: `px-4 md:px-8 lg:px-12`
-- **Card padding**: `p-5` or `p-6`
-- **Stat grid gap**: `gap-4`
-- **Section spacing**: `mb-8`
+1. **Layer 1: Atmosphere (Ambient Canvas)**
+   - Not a flat color, but a soft field of directional light.
+   - **Light mode** combines warm cream (`#f8f5f0`), warm champagne, and soft amber/orange ambient light blooms.
+   - **Dark mode** uses deep carbon near-black (`#090a0f` → `#12151c`) with luminous muted Strava orange (`rgba(252, 76, 2, 0.15)`) highlights.
+2. **Layer 2: Diffusion (Subsurface Reflection)**
+   - Elements behind panels are diffused using `backdrop-filter: blur()`.
+   - Tuned blur depths: 10px (`glass-light`), 16px (`glass-mid`), 20px (`glass-strong`).
+   - Never stacks heavy blurs to avoid muddy visual fog.
+3. **Layer 3: Surface (Interactive Glass Panels & Highlights)**
+   - Every glass panel features a **top-edge specular highlight**:
+     - Light Mode: `inset 0 1px 0 0 rgba(255, 255, 255, 0.85)`
+     - Dark Mode: `inset 0 1px 0 0 rgba(255, 255, 255, 0.12)`
+   - This highlight simulates light hitting the physical bevel edge of glass, providing tangible thickness, premium finish, and tactile depth.
 
-## Border Radius
+---
 
-| Size | Value | Usage |
-|------|-------|-------|
-| Small | `rounded-lg` | Inputs, buttons |
-| Medium | `rounded-xl` | Cards |
-| Large | `rounded-2xl` | Panel cards |
+## 2. Color Palette & Typography
 
-## Shadows
+### 2.1 Color Tokens
 
-None explicitly used. Subtle borders create depth:
-- `border border-border` on surface elements
+The signature primary accent is **Strava Orange**:
 
-## Components
+| Token | Light Mode Value | Dark Mode Value | Usage |
+|---|---|---|---|
+| **Accent (Orange)** | `#fc4c02` / `hsl(18, 98%, 50%)` | `#f97316` / `hsl(24, 95%, 53%)` | Primary CTA buttons, active tabs, progress indicators |
+| **Accent Glow** | `rgba(252, 76, 2, 0.18)` | `rgba(249, 115, 22, 0.24)` | Focus rings, hover states, subtle ambient highlights |
+| **Background (Atmosphere)** | Warm champagne-cream gradient | Deep carbon-slate gradient | Base page canvas |
+| **Surface Strong** | `rgba(255, 255, 255, 0.78)` | `rgba(18, 21, 28, 0.74)` | Hero cards, modals, primary widgets (`blur(20px)`) |
+| **Surface Mid** | `rgba(255, 255, 255, 0.52)` | `rgba(18, 21, 28, 0.52)` | Activity cards, session lists (`blur(16px)`) |
+| **Surface Light** | `rgba(255, 255, 255, 0.35)` | `rgba(255, 255, 255, 0.04)` | Nested chips, secondary stats (`blur(10px)`) |
+| **Text Primary** | `#181512` (warm near-black) | `#fdfefe` (crisp luminous off-white) | Main headings, primary metric numbers |
+| **Text Secondary** | `#544f48` (warm neutral charcoal) | `#a6a9b6` (neutral cool slate) | Subtitles, section descriptions, labels |
+| **Text Muted** | `#878177` (soft muted) | `#6c7182` (deep muted) | Timestamps, metadata, placeholders |
+| **Sport Ride** | `#f97316` | `#f97316` | Cycling activities |
+| **Sport Run** | `#fc4c02` | `#fc4c02` | Running activities |
+| **Sport Walk** | `#f59e0b` | `#f59e0b` | Walking & hiking |
+| **Sport PR** | `#fb923c` | `#fb923c` | Personal records |
+| **Semantic Warning** | `#f59e0b` (Amber) | `#fbbf24` (Amber) | Warning alerts |
+| **Semantic Danger** | `#e11d48` (Rose) | `#fb7185` (Rose) | Destructive actions, high HR zones |
 
-### Cards
-```tsx
-className="bg-surface border border-border rounded-2xl p-5"
-```
+### 2.2 Typography System
 
-### Buttons
-```tsx
-className="px-4 py-2 rounded-lg bg-accent-ride text-white hover:opacity-90 transition-colors"
-```
+- **UI & Controls**: Modern geometric sans-serif (`Geist Sans` / `Inter`, system stack) for crisp, legible UI elements.
+- **Numbers & Metrics**: Tabular lining figures (`font-variant-numeric: tabular-nums` / `font-mono`) so distances, times, paces, heart rates, elevations, and splits align precisely across tables and cards.
+- **Headings**: Modern bold display with high contrast and subtle letter spacing (`tracking-tight`).
 
-### Inputs
-```tsx
-className="px-3 py-2 bg-muted text-text-primary rounded-lg text-sm border border-border focus:outline-none"
-```
+---
 
-### Stat Cards
-- Fixed height: `h-32`
-- Flex layout: `flex flex-col justify-between`
-- Large monospace text: `text-3xl font-mono`
+## 3. UI Component Architecture
 
-### Activity Cards
-- Hover: `whileHover={{ scale: 1.015, y: -2 }}`
-- Transition: Spring physics
-- Status icons: Activity type color-coded
+Strava Hub enforces strict UI component consistency:
 
-## Animations
+### 3.1 `GlassCard`
+- Foundational surface container implementing the 3-layer depth model.
+- Depth tiers:
+  - `variant="strong"`: Hero metric cards, interactive modals (`blur(20px)`, `border-white/10`, top highlight).
+  - `variant="mid"`: Activity cards, transaction/session lists, breakdown blocks (`blur(16px)`).
+  - `variant="light"`: Nested chips, secondary stats, mini tiles (`blur(10px)`).
+- Features top-edge specular highlight (`inset 0 1px 0 ...`) and soft ambient drop shadows.
+- `interactive` prop enables spring hover lift (`whileHover={{ y: -3 }}`) and compression (`whileTap={{ scale: 0.985 }}`).
 
-### Page Transitions
-- Duration: 280ms
-- Easing: easeOut
-- Effect: Slide + fade (opacity 0, y: 14)
+### 3.2 `Button`
+- **Variants**:
+  - `primary`: Solid radiant orange gradient (`from-[#fc4c02] to-[#f97316]`) with white text, top specular rim, and subtle orange depth glow.
+  - `accent-ghost`: Translucent orange tinted glass with crisp border.
+  - `ghost`: Transparent with neutral hover glass effect.
+  - `danger`: Soft rose glass for destructive actions.
+- **Touch target**: Minimum **44px** height for ergonomic mobile tap accuracy.
+- **Active state**: Spring micro-compression (`whileTap={{ scale: 0.98 }}`).
 
-### Component Interactions
-- Hover: Scale 1.015 + slight lift
-- Tap: Scale 0.98
-- Spring: `stiffness: 300, damping: 22`
+### 3.3 Modal Dialogs & Sheets (`ConfirmModal`)
+- Native HTML `alert()` and `confirm()` are strictly forbidden.
+- Modals utilize `framer-motion` spring physics:
+  - Damping: `30`
+  - Stiffness: `320`
+- Surface strong container with frosted diffusion backdrop (`backdrop-blur-md`).
 
-### List Animations
-- Stagger children: 70ms delay
-- Container easing
+### 3.4 Notifications & Feedback
+- Copy actions feature immediate inline icon feedback (`CheckCircle2` / "Copied!" state).
+- Tactile spring feedback on all button presses and interactive cards.
 
-## Responsive Breakpoints
+---
 
-| Breakpoint | Width | Layout |
-|------------|-------|--------|
-| Mobile | < 768px | Single column, bottom nav |
-| Tablet | 768px-1024px | Icon sidebar, stacked grid |
-| Desktop | ≥ 1024px | Full sidebar, multi-column |
+## 4. Mobile Ergonomics & Navigation
 
-## Dark Theme
-
-The entire app uses a dark-first approach:
-- No light mode toggle
-- Consistent dark theme throughout
-- High contrast for accessibility
-- WCAG AA compliant color pairs
-
-## Icon System
-
-Using **Lucide React** icons:
-- Size: `w-5 h-5` (20px) for default
-- Size: `w-6 h-6` (24px) for large
-- Colors: Activity-specific or inherit text color
-- Stroke width: 2px (default)
-
-## Accessibility
-
-- Color contrast: 4.5:1 minimum on text
-- Focus states: Outline on interactive elements
-- Keyboard navigation: Full support
-- Semantic HTML: Proper heading hierarchy
+- **Mobile (< 768px)**:
+  - Fixed bottom glass navigation bar (`.glass-bottom-nav`) with thumb-friendly buttons for Dashboard, Activities, Records, Compare, and Profile.
+  - Generous 50px tap target height with thumb-friendly layout.
+  - Active indicator with radiant orange glowing pill and specular highlight.
+- **Desktop (≥ 768px)**:
+  - Fixed left glass sidebar (`.glass-nav`) with Strava Hub branding, ambient orange glow capsule, and active link indicators.
+  - Minimum 44px navigation tap targets.
+  - Footer with connection status and `ThemeToggle`.
